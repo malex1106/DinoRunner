@@ -3,6 +3,16 @@ h1, h3 {
   color: #383838;
 }
 
+h1 {
+  font-size: 35px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: normal;
+}
+
 #yourscore {
   text-align: center;
 }
@@ -13,7 +23,7 @@ table {
   table-layout: auto;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 100%;
 }
 
 td, th {
@@ -37,4 +47,11 @@ th {
 
 hr {
   width: 80%;
+}
+
+#tablediv {
+  width: 80%;
+  padding-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
