@@ -4,7 +4,7 @@
 // extract from chromium source code by @liuwayong
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-database.js";
-import { getFirestore, collection, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-firestore.js";
+import { getFirestore, collection, setDoc, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-analytics.js";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -848,10 +848,14 @@ const app = initializeApp(firebaseConfig);
             });
 
             //console.log("Document written with ID: ", docRef.id);
+            $("#leaderboard").show();
+            showLeaderboard(db, userName, actualDistance, 100);
+            $("#main-frame-error").hide();
+            $("#messageBox").hide();
 
             // Navigate to leaderboard
-            var leaderboard = window.open('leaderboard.html', '_blank');
-            leaderboard.data = { name: userName, score: actualDistance }
+            //var leaderboard = window.open('leaderboard.html', '_blank');
+            //leaderboard.data = { name: userName, score: actualDistance }
             //leaderboard.postMessage({ name: userName, score: actualDistance }, '*');
         },
 
@@ -1080,6 +1084,49 @@ const app = initializeApp(firebaseConfig);
 
     //******************************************************************************
 
+    /**
+     * Show leaderboard if gameOver.
+     */
+    async function showLeaderboard(db, name, score, lim) {
+      // Print your achieved score.
+      $("#text").text(`Congrats ${name}, you achieved a score of ${score}!`);
+
+      const q = query(collection(db, "records"), orderBy("score", "desc"), limit(lim));
+      const querySnapshot = await getDocs(q);
+
+      const snaps = []
+      var i = 0;
+      querySnapshot.forEach((doc) => {
+        // Counter
+        i += 1;
+        snaps[i-1] = [i, doc.data()['name'], doc.data()['score']];
+      });
+      let tab = $('#example').DataTable({
+        columns: [
+                { title: '#' },
+                { title: 'Username' },
+                { title: 'Score' },
+            ],
+        data:    snaps
+      });
+      /*let tab = new DataTable('#example', {
+          data: snaps,
+          columns: [
+                  { title: '#' },
+                  { title: 'Username' },
+                  { title: 'Score' },
+              ],
+      });*/
+      $('#close').on( 'click', function () {
+        tab.destroy();
+        $("#leaderboard").hide();
+        $("#main-frame-error").show();
+        $("#messageBox").show();
+      });
+
+    }
+
+    //******************************************************************************
 
     /**
      * Game over panel.
